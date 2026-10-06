@@ -212,9 +212,9 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
   padding:10px 16px 11px;font-size:16px;line-height:23px;word-break:keep-all}
 .bubble::before{content:"";position:absolute;bottom:-10px;width:0;height:0;border-top:10px solid var(--fg)}
 .bubble::after{content:"";position:absolute;bottom:-8.5px;width:0;height:0;border-top:9px solid var(--bg)}
-.half.a .bubble{left:0;right:20px;text-align:right}
-.half.a .bubble::before{right:22px;border-left:10px solid transparent}
-.half.a .bubble::after{right:23px;border-left:8.5px solid transparent}
+.half.a .bubble{left:0;right:20px}
+.half.a .bubble::before{left:22px;border-right:10px solid transparent}
+.half.a .bubble::after{left:23px;border-right:8.5px solid transparent}
 .half.b .bubble{left:20px;right:0}
 .half.b .bubble::before{right:22px;border-left:10px solid transparent}
 .half.b .bubble::after{right:23px;border-left:8.5px solid transparent}
