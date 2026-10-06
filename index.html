@@ -326,7 +326,7 @@ const img=(z=100,y=50)=>({src:'', z, x:50, y});
 const person=()=>({
   name:'Name', age:'N세', height:'000cm', gender:'남성 / 여성', build:'체격', animal:'동물 이름',
   colors:{...PALETTES.white},
-  must:'이건 필수 정보예요',
+  must:'이건 꼭 지켜주세요',
   look:'외관 정보를 적어주세요\n머리 길이, 가르마 방향\n눈매, 점 위치\n자주 입는 옷, 액세서리',
   notThis:'그런 캐해는 안 돼요',
   isThis:'이게 옳은 캐해예요',
@@ -337,7 +337,7 @@ const DEFAULT=()=>({
   pair:{name:'Pair Name', keywords:'키워드1 키워드2', credit:'@badalimwork'},
   a:person(), b:person(),
   rel:{desc:'페어 서사 설명, 관계성 요약, 불가능한 구도 등을 자유롭게 적어주세요.'},
-  ui:{tone:'white', scale:2, rev:9}
+  ui:{tone:'white', scale:2, rev:10}
 });
 let state=load()||DEFAULT();
 function load(){
@@ -371,7 +371,10 @@ function load(){
     if(!(saved.ui && saved.ui.rev>=9)){
       if(st.pair.keywords==='키워드1 키워드2 키워드3') st.pair.keywords='키워드1 키워드2';
     }
-    st.ui.rev=9;
+    if(!(saved.ui && saved.ui.rev>=10)){
+      ['a','b'].forEach(k=>{ if(['이건 필수 정보예요','필수정보를 적어주세요','이건 절대 빠지면 안 되는 부분이에요'].includes(st[k].must) || /절대/.test(st[k].must||'')) st[k].must='이건 꼭 지켜주세요'; });
+    }
+    st.ui.rev=10;
     return st; }
   catch(e){ return null; }
 }
@@ -387,7 +390,7 @@ function persist(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{
     try{ localStorage.setItem(KEY, JSON.stringify(state)); }
-    catch(e){ if(!warnedQuota){ toast('이미지 용량이 커서 자동 저장이 안 됐어요. 창을 닫기 전에 PNG로 저장해두세요.'); warnedQuota=true; } }
+    catch(e){ if(!warnedQuota){ toast('이미지 용량이 커서 자동 저장되지 않았습니다. 창을 닫기 전에 PNG로 저장하는 것을 권장합니다.'); warnedQuota=true; } }
   },400);
 }
 const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k], state);
@@ -496,29 +499,29 @@ const personPane=s=>`
   <div class="group"><h2>색상</h2>${colorRow(s)}</div>
   <div class="group"><h2>일러스트</h2>
     ${imgField('일러스트', s+'.art')}
-    <p class="help">배경이 투명한 PNG를 올리면 가장 깔끔하게 얹혀요.</p>
+    <p class="help">배경이 투명한 PNG를 올리면 가장 깔끔하게 얹힙니다.</p>
   </div>
   <div class="group"><h2>말풍선</h2>${field('한마디', s+'.line')}</div>
   <div class="group"><h2>외관 참고</h2>
     ${field('필수 항목', s+'.must')}
-    ${field('외관 정보', s+'.look', {area:true, rows:5, help:'한 줄에 하나씩 적으면 목록으로 정리돼요.'})}
+    ${field('외관 정보', s+'.look', {area:true, rows:5, help:'한 줄에 하나씩 적으면 목록으로 정리됩니다.'})}
   </div>
   <div class="group"><h2>캐해 참고</h2>
-    ${field('이건 아니에요', s+'.notThis', {area:true, rows:2})}
-    ${field('바로 이거예요', s+'.isThis', {area:true, rows:2})}
+    ${field('X', s+'.notThis', {area:true, rows:2})}
+    ${field('O', s+'.isThis', {area:true, rows:2})}
   </div>`;
 const panes={
   pair:`
   <div class="group"><h2>페어</h2>
-    ${field('페어명', 'pair.name', {help:'틀 왼쪽 위에 가장 크게 들어가요.'})}
-    ${field('키워드', 'pair.keywords', {help:'띄어쓰기나 쉼표로 나눠 적으면 # 이 자동으로 붙어요.'})}
+    ${field('페어명', 'pair.name', {help:'틀 왼쪽 위에 가장 크게 들어갑니다.'})}
+    ${field('키워드', 'pair.keywords', {help:'띄어쓰기나 쉼표로 나눠 적으면 # 이 자동으로 붙습니다.'})}
   </div>`,
   a:personPane('a'),
   b:personPane('b'),
   rel:`
   <div class="group"><h2>표정 이모지</h2>
     <div class="row2">${field('A의 표정', 'a.emoji', {ph:'예: 🙂'})}${field('B의 표정', 'b.emoji', {ph:'예: 😠'})}</div>
-    <p class="help" style="margin:-4px 0 14px">이모지를 붙여넣거나 표정 이미지를 올려주세요.<br>이미지가 있으면 이미지가 먼저 보여요.</p>
+    <p class="help" style="margin:-4px 0 14px">이모지를 붙여넣거나 표정 이미지를 올릴 수 있습니다.<br>이미지가 있으면 이미지가 먼저 보입니다.</p>
     ${imgField('A 표정 이미지', 'a.emojiImg')}
     ${imgField('B 표정 이미지', 'b.emojiImg')}
   </div>
@@ -533,10 +536,10 @@ const panes={
   </div>
   <div class="group"><h2>저장 화질</h2>
     <div class="seg" id="scale"><button data-v="1">1800px</button><button data-v="2">3600px</button><button data-v="3">5400px</button></div>
-    <p class="help">가로 길이 기준이에요. 클수록 선명하지만 파일이 무거워져요.</p>
+    <p class="help">가로 길이 기준입니다. 클수록 선명하지만 파일이 무거워집니다.</p>
   </div>
   <div class="group"><h2>저장</h2>
-    <p class="help" style="margin:0 0 12px">작성한 내용은 이 브라우저에 자동으로 저장돼요.<br>완성되면 아래 버튼으로 이미지를 내려받으세요.</p>
+    <p class="help" style="margin:0 0 12px">작성한 내용은 이 브라우저에 자동으로 저장됩니다.<br>완성되면 아래 버튼으로 이미지를 내려받을 수 있습니다.</p>
     <button class="btn wide" id="savePng">PNG로 저장</button>
     <button class="btn wide" id="reset" style="margin-top:6px">처음 상태로 되돌리기</button>
   </div>`
@@ -585,7 +588,7 @@ paneWrap.addEventListener('change',e=>{
     if(!file) return;
     const isArt=key.endsWith('.art');
     readImage(file).then(src=>{ Object.assign(get(key), {src, z:isArt?84:100, x:50, y:isArt?100:50}); syncPanel(); update(); })
-      .catch(()=>toast('이미지를 읽지 못했어요. PNG나 JPG 파일인지 확인해주세요.'));
+      .catch(()=>toast('이미지를 읽지 못했습니다. PNG나 JPG 파일인지 확인이 필요합니다.'));
     t.value='';
   }
 });
@@ -595,8 +598,8 @@ paneWrap.addEventListener('click',e=>{
   const tone=e.target.closest('#tone2 button'); if(tone){ setTone(tone.dataset.v); syncPanel(); update(); return; }
   const sc=e.target.closest('#scale button'); if(sc){ state.ui.scale=+sc.dataset.v; syncPanel(); persist(); return; }
   if(e.target.id==='savePng'){ savePng(); return; }
-  if(e.target.id==='reset' && confirm('작성한 내용과 이미지를 모두 지우고 처음 상태로 되돌릴까요?')){
-    state=DEFAULT(); syncPanel(); update(); toast('처음 상태로 되돌렸어요.');
+  if(e.target.id==='reset' && confirm('작성한 내용과 이미지를 모두 지우고 처음 상태로 되돌리겠습니까?')){
+    state=DEFAULT(); syncPanel(); update(); toast('처음 상태로 되돌렸습니다.');
   }
 });
 
@@ -654,16 +657,16 @@ async function renderCanvas(){
 let busy=false;
 async function savePng(){
   if(busy) return;
-  if(typeof html2canvas!=='function'){ toast('저장 도구를 불러오지 못했어요. 인터넷 연결을 확인한 뒤 새로고침해주세요.'); return; }
+  if(typeof html2canvas!=='function'){ toast('저장 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침이 필요합니다.'); return; }
   busy=true;
   const btns=[document.getElementById('savePng')];
   btns.forEach(b=>{ b.disabled=true; b.textContent='저장하는 중…'; });
   try{
     const canvas=await renderCanvas();
     await new Promise(r=>canvas.toBlob(b=>{ download(URL.createObjectURL(b), fileBase()+'.png'); r(); },'image/png'));
-    toast('PNG로 저장했어요.');
+    toast('PNG로 저장했습니다.');
   }catch(err){
-    console.error(err); toast('저장하지 못했어요. 이미지 크기를 줄이거나 저장 화질을 낮춰 다시 시도해주세요.');
+    console.error(err); toast('저장하지 못했습니다. 이미지 크기를 줄이거나 저장 화질을 낮춘 뒤 다시 시도할 수 있습니다.');
   }finally{
     btns.forEach(b=>{ b.disabled=false; b.textContent='PNG로 저장'; });
     busy=false;
